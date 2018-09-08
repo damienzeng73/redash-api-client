@@ -1,7 +1,7 @@
 import json
 import requests
 
-class RedashClient(object):
+class RedashAPIClient(object):
     def __init__(self, api_key, host='http://localhost:5000'):
         self.host = host
         self.api_key = api_key
