@@ -11,14 +11,16 @@ Install using pip:
 
 ## Getting Started
 ```python
-from redash.client import RedashClient
+from redashAPI.client import RedashAPIClient
 
+# Create Client instance
 """
     :args:
     API_KEY
     REDASH_HOST (optional): 'http://localhost:5000' by default
 """
 Redash = RedashClient(API_KEY, REDASH_HOST)
+
 
 # Connect to a Data Source
 """
@@ -35,6 +37,7 @@ Redash.connect_data_source("First Data Source", "pg", {
     "port": DB_PORT
 })
 
+
 # Create Query
 """
     :args:
@@ -45,6 +48,7 @@ Redash.connect_data_source("First Data Source", "pg", {
 """
 Redash.create_query("First Query", 1, "SELECT * FROM table_name;", False)
 
+
 # Generate Query Result
 """
     :args:
@@ -53,6 +57,7 @@ Redash.create_query("First Query", 1, "SELECT * FROM table_name;", False)
     QUERY_ID
 """
 Redash.generate_query_result(1, "SELECT * FROM table_name;", 1)
+
 
 # Create Visualization
 """
@@ -66,12 +71,14 @@ Redash.generate_query_result(1, "SELECT * FROM table_name;", 1)
 """
 Redash.create_visualization("First Visualization", 1, "line", X_AXIS_COLUMN, Y_AXIS_COLUMN, Y_LABEL)
 
+
 # Create Dashboard
 """
     :args:
     NAME
 """
 Redash.create_dashboard("First Dashboard")
+
 
 # Add Visualization into Dashboard
 """
@@ -81,6 +88,7 @@ Redash.create_dashboard("First Dashboard")
     FULL_WIDTH (optional): Full width or not on dashboard, False by default
 """
 Redash.add_to_dashboard(1, 1, True)
+
 
 # Get Dashboard public URL
 """
