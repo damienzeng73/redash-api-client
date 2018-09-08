@@ -20,8 +20,62 @@ from redashAPI.client import RedashAPIClient
     REDASH_HOST (optional): 'http://localhost:5000' by default
 """
 Redash = RedashAPIClient(API_KEY, REDASH_HOST)
+```
 
+### Basic Requests
+| URI                | Supported Methods             |
+| ------------------ | ----------------------------- |
+| *users*            | **GET**, **POST**             |
+| *users/1*          | **GET**, **POST**             |
+| *data_sources*     | **GET**, **POST**             |
+| *data_sources/1*   | **GET**, **POST**, **DELETE** |
+| *queries*          | **GET**, **POST**             |
+| *queries/1*        | **GET**, **POST**, **DELETE** |
+| *query_results*    | **POST**                      |
+| *query_results/1*  | **GET**                       |
+| *visualizations*   | **POST**                      |
+| *visualizations/1* | **POST**, **DELETE**          |
+| *dashboards*       | **GET**, **POST**             |
+| *dashboards/slug*  | **GET**, **POST**, **DELETE** |
+| *widgets*          | **POST**                      |
+| *widgets/1*        | **POST**, **DELETE**          |
 
+```python
+### EXAMPLE ###
+
+# List all Data Sources
+res = Redash.get('data_sources')
+res.json()
+"""
+Response: [{"name": "Data Source 1", "pause_reason": null, "syntax": "sql", "paused": false, "view_only": false, "type": "mysql", "id": 1}]
+"""
+
+# Get particular Data Source
+res = Redash.get('data_sources/1')
+res.json()
+"""
+Response: {"scheduled_queue_name": "scheduled_queries", "name": "Data Source 1", "pause_reason": null, "queue_name": "queries", "syntax": "sql", "paused": false, "options": {"passwd": "--------", "host": "mysql", "db": "mds", "port": 3306, "user": "root"}, "groups": {"2": false}, "type": "mysql", "id": 1}
+"""
+
+# Create New Data Source
+Redash.post('data_sources', {
+    "name": "New Data Source",
+    "type": "mysql",
+    "options": {
+        "dbname": DB_NAME,
+        "host": DB_HOST,
+        "user": DB_USER,
+        "passwd": DB_PASSWORD,
+        "port": DB_PORT
+    }
+})
+
+# Delete Data Source 1
+Redash.delete('data_sources/1')
+```
+
+### Useful Methods
+```python
 # Connect to a Data Source
 """
     :args:
@@ -36,48 +90,8 @@ Redash.connect_data_source("First Data Source", "pg", {
     "passwd": DB_PASSWORD,
     "port": DB_PORT
 })
-```
 
-### Basic Requests
-| URI                | Supported Methods             |
-| ------------------ | ----------------------------- |
-| *users*            | **GET**, **POST**             |
-| *users/1*          | **GET**, **POST**, **DELETE** |
-| *data_sources*     | **GET**, **POST**             |
-| *data_sources/1*   | **GET**, **POST**, **DELETE** |
-| *queries*          | **GET**, **POST**             |
-| *queries/1*        | **GET**, **POST**, **DELETE** |
-| *query_results*    | **POST**                      |
-| *query_results/1*  | **GET**, **POST**, **DELETE** |
-| *visualizations*   | **POST**                      |
-| *visualizations/1* | **POST**, **DELETE**          |
-| *dashboards*       | **GET**, **POST**             |
-| *dashboards/slug*  | **GET**, **POST**, **DELETE** |
-| *widgets*          | **POST**                      |
-| *widgets/1*        | **POST**, **DELETE**          |
 
-Example:
-```python
-# List all Users
-res = Redash.get('users')
-res.json()
-"""
-[{"auth_type": "password", "disabled_at": null, "name": "admin", "groups": [1, 2], "updated_at": "2018-09-08T07:54:03.045582+00:00", "created_at": "2018-09-08T07:54:03.045582+00:00", "is_disabled": false, "id": 1, "profile_image_url": "https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=40&d=identicon", "email": "admin@example.com"}]
-"""
-
-# Get particular User
-res = Redash.get('users/1')
-res.json()
-"""
-{"auth_type": "password", "is_disabled": false, "updated_at": "2018-09-08T07:54:03.045582+00:00", "profile_image_url": "https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=40&d=identicon", "disabled_at": null, "groups": [1, 2], "id": 1, "name": "admin", "created_at": "2018-09-08T07:54:03.045582+00:00", "api_key": "5y9ShL6b6haKFdmkDOHPtc4jFnCK5YknFc4mH70k", "email": "admin@example.com"}
-"""
-
-# Create User
-Redash.post('users', {"name": "New User", "email": "test@example.com"})
-```
-
-### Useful Methods
-```python
 # Create Query
 """
     :args:
