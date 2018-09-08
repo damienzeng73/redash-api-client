@@ -20,10 +20,19 @@ class RedashAPIClient(object):
     def post(self, uri, payload=dict()):
         data = json.dumps(payload)
 
+        self.s.headers.update({"Content-Type": "application/json"})
         res = self.s.post(f"{self.host}/api/{uri}", data=data)
 
         if res.status_code != 200:
             raise Exception(f"Post data to URL: /api/{uri} failed.")
+
+        return res
+
+    def delete(self, uri):
+        res = self.s.delete(f"{self.host}/api/{uri}")
+
+        if res.status_code != 200:
+            raise Exception(f"Delete data from URL: /api/{uri} failed.")
 
         return res
 
