@@ -98,9 +98,10 @@ Redash.create_data_source("pg", "First Data Source", {
     DATA_SOURCE_ID
     QUERY_NAME
     QUERY_STRING
-    WITH_RESULT (optional): Generate query results automatically, True by default
+    DESC (optional)
+    WITH_RESULTS (optional): Generate query results automatically, True by default
 """
-Redash.create_query(1, "First Query", "SELECT * FROM table_name;", False)
+Redash.create_query(1, "First Query", "SELECT * FROM table_name;", with_results=False)
 
 
 # Refresh Query
@@ -130,6 +131,7 @@ Redash.generate_query_result(1)
     Y_LABEL (optional): Custom name for legend
     TABLE_COLUMNS (optional): Custom columns for Table (Required if CHART_TYPE is table)
     PIVOT_TABLE_OPTIONS (optional): Options for Pivot Table (Required if CHART_TYPE is pivot)
+    DESC (optional)
 """
 Redash.create_visualization(1, "line", "First Visualization", X_AXIS, Y_AXIS, Y_LABEL)
 
@@ -148,8 +150,9 @@ Redash.create_dashboard("First Dashboard")
     DASHBOARD_ID
     VISUALIZATION_ID
     FULL_WIDTH (optional): Full width or not on dashboard, False by default
+    POSITION (optional)
 """
-Redash.add_to_dashboard(1, 1, True)
+Redash.add_to_dashboard(1, 1, full_width=True)
 
 
 # Publish Dashboard
