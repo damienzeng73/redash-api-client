@@ -22,7 +22,7 @@ from redashAPI.client import RedashAPIClient
 Redash = RedashAPIClient(API_KEY, REDASH_HOST)
 ```
 
-### Redash's RESULful API
+### Redash's RESTful API
 | URI                | Supported Methods             |
 | ------------------ | ----------------------------- |
 | *users*            | **GET**, **POST**             |
