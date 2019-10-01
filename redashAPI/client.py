@@ -60,7 +60,7 @@ class RedashAPIClient(object):
             if qry_id is None:
                 raise Exception("Failed to create query.")
 
-            return self.generate_query_results(ds_id, qry, qry_id)
+            return self.generate_query_results(qry_id)
         return res
 
     def refresh_query(self, qry_id):
