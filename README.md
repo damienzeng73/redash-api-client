@@ -22,7 +22,7 @@ from redashAPI.client import RedashAPIClient
 Redash = RedashAPIClient(API_KEY, REDASH_HOST)
 ```
 
-### Basic Requests
+### Redash's RESULful API
 | URI                | Supported Methods             |
 | ------------------ | ----------------------------- |
 | *users*            | **GET**, **POST**             |
@@ -50,7 +50,7 @@ res.json()
 Response: [{"name": "Data Source 1", "pause_reason": null, "syntax": "sql", "paused": false, "view_only": false, "type": "mysql", "id": 1}]
 """
 
-# Get particular Data Source
+# Get specific Data Source
 res = Redash.get('data_sources/1')
 res.json()
 """
@@ -70,20 +70,20 @@ Redash.post('data_sources', {
     }
 })
 
-# Delete Data Source 1
+# Delete Data Source
 Redash.delete('data_sources/1')
 ```
 
-### Useful Methods
+### Methods
 ```python
-# Connect to a Data Source
+# Create Data Source
 """
     :args:
-    DATA_SOURCE_NAME
     DATA_SOURCE_TYPE: ["sqlite", "mysql", "pg", "mongodb", "mssql" ...]
+    DATA_SOURCE_NAME
     OPTIONS
 """
-Redash.connect_data_source("First Data Source", "pg", {
+Redash.create_data_source("pg", "First Data Source", {
     "dbname": DB_NAME,
     "host": DB_HOST,
     "user": DB_USER,
@@ -95,35 +95,43 @@ Redash.connect_data_source("First Data Source", "pg", {
 # Create Query
 """
     :args:
-    QUERY_NAME
     DATA_SOURCE_ID
+    QUERY_NAME
     QUERY_STRING
-    WITH_RESULT (optional): Generate query_result automatically, True by default
+    WITH_RESULT (optional): Generate query results automatically, True by default
 """
-Redash.create_query("First Query", 1, "SELECT * FROM table_name;", False)
+Redash.create_query(1, "First Query", "SELECT * FROM table_name;", False)
+
+
+# Refresh Query
+"""
+    :args:
+    QUERY_ID
+"""
+Redash.refresh_query(1)
 
 
 # Generate Query Result
 """
     :args:
-    DATA_SOURCE_ID
-    QUERY_STRING
     QUERY_ID
 """
-Redash.generate_query_result(1, "SELECT * FROM table_name;", 1)
+Redash.generate_query_result(1)
 
 
 # Create Visualization
 """
     :args:
-    NAME
     QUERY_ID
-    CHART_TYPE: ["line", "column", "area", "pie", "scatter", "bubble", "box"]
-    X_AXIS_COLUMN
-    Y_AXIS_COLUMN
+    CHART_TYPE: ["table", "line", "column", "area", "pie", "scatter", "bubble", "box", "pivot"]
+    CHART_NAME
+    X_AXIS (optional): Column for X Axis (Required if CHART_TYPE is not table nor pivot)
+    Y_AXIS (optional): Column for Y Axis (Required if CHART_TYPE is not table not pivot)
     Y_LABEL (optional): Custom name for legend
+    TABLE_COLUMNS (optional): Custom columns for Table (Required if CHART_TYPE is table)
+    PIVOT_TABLE_OPTIONS (optional): Options for Pivot Table (Required if CHART_TYPE is pivot)
 """
-Redash.create_visualization("First Visualization", 1, "line", X_AXIS_COLUMN, Y_AXIS_COLUMN, Y_LABEL)
+Redash.create_visualization(1, "line", "First Visualization", X_AXIS, Y_AXIS, Y_LABEL)
 
 
 # Create Dashboard
@@ -144,12 +152,12 @@ Redash.create_dashboard("First Dashboard")
 Redash.add_to_dashboard(1, 1, True)
 
 
-# Publish Dashboard and get its public URL
+# Publish Dashboard
 """
     :args:
     DASHBOARD_ID
 """
-url = Redash.get_dashboard_public_url(1)
+url = Redash.publish_dashboard(1)
 ```
 
 ## License
