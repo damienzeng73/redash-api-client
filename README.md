@@ -144,15 +144,17 @@ Redash.create_visualization(1, "line", "First Visualization", X_AXIS, Y_AXIS, Y_
 Redash.create_dashboard("First Dashboard")
 
 
-# Add Visualization into Dashboard
+# Add Widget into Dashboard
 """
     :args:
     DASHBOARD_ID
-    VISUALIZATION_ID
+    TEXT (optional)
+    VISUALIZATION_ID (optional)
     FULL_WIDTH (optional): Full width or not on dashboard, False by default
     POSITION (optional)
 """
-Redash.add_to_dashboard(1, 1, full_width=True)
+Redash.add_wdiget(1, text="Test")
+Redash.add_widget(1, visualization_id=1, full_width=True)
 
 
 # Publish Dashboard

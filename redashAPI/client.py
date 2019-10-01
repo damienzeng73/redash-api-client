@@ -142,7 +142,7 @@ class RedashAPIClient(object):
 
         return self.post('dashboards', payload)
 
-    def add_to_dashboard(self, db_id, vs_id, full_width=False, position=None):
+    def add_widget(self, db_id, text="", vs_id=None, full_width=False, position=None):
         res = self.get(f"dashboards")
 
         results = res.json().get('results', [])
@@ -153,6 +153,7 @@ class RedashAPIClient(object):
 
         payload = {
             "dashboard_id": db_id,
+            "text": text,
             "visualization_id": vs_id,
             "width": 1,
             "options": {
