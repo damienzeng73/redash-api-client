@@ -3,8 +3,8 @@ import requests
 
 class RedashAPIClient(object):
     def __init__(self, api_key, host='http://localhost:5000'):
-        self.host = host
         self.api_key = api_key
+        self.host = host
 
         self.s = requests.Session()
         self.s.headers.update({"Authorization": f"Key {api_key}"})
@@ -36,48 +36,72 @@ class RedashAPIClient(object):
 
         return res
 
-    def connect_data_source(self, name, _type, options):
+    def create_data_source(self, _type, name, options):
         payload = {
-            "name": name,
             "type": _type,
+            "name": name,
             "options": options
         }
 
         return self.post('data_sources', payload)
 
-    def create_query(self, name, ds_id, qry, desc="", with_result=True):
+    def create_query(self, ds_id, name, qry, desc="", with_results=True):
         payload = {
-            "name": name,
             "data_source_id": ds_id,
+            "name": name,
             "query": qry,
             "description": desc
         }
 
-        if with_result:
-            try:
-                res = self.post('queries', payload)
-                qry_id = res.json()['id']
-            except Exception as e:
-                raise e
+        res = self.post('queries', payload)
+        qry_id = res.json().get('id', None)
 
-            return self.generate_query_result(ds_id, qry, qry_id)
-        return self.post('queries', payload)
+        if with_results:
+            if qry_id is None:
+                raise Exception("Failed to create query.")
 
-    def generate_query_result(self, ds_id, qry, qry_id):
+            return self.generate_query_results(ds_id, qry, qry_id)
+        return res
+
+    def refresh_query(self, qry_id):
+        return self.post(f"queries/{qry_id}/refresh")
+
+    def generate_query_results(self, qry_id):
+        res = self.get('queries')
+        results = res.json().get('results', [])
+
+        ds_id, qry = next(((q['data_source_id'], q['query']) for q in results if q['id'] == qry_id), (None, None))
+
+        if ds_id is None or qry is None:
+            raise Exception("Query not found.")
+
         payload = {
             "data_source_id": ds_id,
-            "query": qry,
-            "query_id": qry_id
+            "query_id": qry_id,
+            "query": qry
         }
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, name, qry_id, _type, x_axis, y_axis, y_label=None):
-        payload = {
-            "name": name,
-            "type": "CHART",
-            "query_id": qry_id,
-            "options": {
+    def create_visualization(self, qry_id, _type, name, x_axis=None, y_axis=None, y_label=None, table_columns=None, pivot_table_options=None, desc=None):
+        if _type == 'table':
+            chart_type = 'TABLE'
+            options = {
+                "autoHeight": True,
+                "defaultColumns": 3,
+                "defaultRows": 15,
+                "itemsPerPage": 10,
+                "minColumns": 1,
+                "columns": table_columns
+            }
+
+        elif _type == 'pivot':
+            chart_type = 'PIVOT'
+            options = pivot_table_options
+
+        else:
+            chart_type = 'CHART'
+            options = {
                 "globalSeriesType": _type,
                 "sortX": True,
                 "legend": {"enabled": True},
@@ -100,6 +124,13 @@ class RedashAPIClient(object):
                 },
                 "showDataLabels": True if _type == 'pie' else False
             }
+
+        payload = {
+            "name": name,
+            "type": chart_type,
+            "query_id": qry_id,
+            "description": desc,
+            "options": options
         }
 
         return self.post('visualizations', payload)
@@ -111,27 +142,25 @@ class RedashAPIClient(object):
 
         return self.post('dashboards', payload)
 
-    def add_to_dashboard(self, db_id, vs_id, full_width=False):
+    def add_to_dashboard(self, db_id, vs_id, full_width=False, position=None):
         res = self.get(f"dashboards")
 
-        slug = None
-        for r in res.json()['results']:
-            if r['id'] == db_id:
-                slug = r['slug']
-                break
+        results = res.json().get('results', [])
+        slug = next((d['slug'] for d in results if d['id'] == db_id), None)
 
-        if slug:
-            payload = {
-                "dashboard_id": db_id,
-                "visualization_id": vs_id,
-                "width": 1,
-                "options": {
-                    "position": self.calculate_widget_position(slug, full_width)
-                }
+        if slug is None:
+            raise Exception("Dashboard not found.")
+
+        payload = {
+            "dashboard_id": db_id,
+            "visualization_id": vs_id,
+            "width": 1,
+            "options": {
+                "position": position or self.calculate_widget_position(slug, full_width)
             }
+        }
 
-            return self.post('widgets', payload)
-        return "Dashboard not found."
+        return self.post('widgets', payload)
 
     def calculate_widget_position(self, slug, full_width):
         position = {
@@ -142,7 +171,7 @@ class RedashAPIClient(object):
         }
 
         res = self.get(f'dashboards/{slug}')
-        widgets = res.json()['widgets']
+        widgets = res.json().get('widgets', None)
 
         full_width_widgets_count = 0
         for w in widgets:
@@ -160,12 +189,13 @@ class RedashAPIClient(object):
 
         return position
 
-    def get_dashboard_public_url(self, db_id):
+    def publish_dashboard(self, db_id):
         try:
             self.post(f"dashboards/{db_id}", {"is_draft": False})
-            res = self.post(f"dashboards/{db_id}/share")
-            public_url = res.json()['public_url']
         except Exception as e:
             raise e
+
+        res = self.post(f"dashboards/{db_id}/share")
+        public_url = res.json().get('public_url', None)
 
         return public_url
