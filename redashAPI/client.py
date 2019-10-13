@@ -128,7 +128,7 @@ class RedashAPIClient(object):
                 "xAxis": {"type": "category", "labels": {"enabled": True}},
                 "error_y": {"type": "data", "visible": True},
                 "series": {"stacking": None, "error_y": {"type": "data", "visible": True}},
-                "seriesOptions": seriesOptiones,
+                "seriesOptions": seriesOptions,
                 "columnMapping": {x_axis: "x", **columnMapping},
                 "showDataLabels": True if _type == 'pie' else False
             }
