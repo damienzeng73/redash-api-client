@@ -132,7 +132,7 @@ Redash.generate_query_result(1)
     PIVOT_TABLE_OPTIONS (optional): Options for Pivot Table (Required if CHART_TYPE is pivot)
     DESC (optional)
 """
-Redash.create_visualization(1, "line", "First Visualization", x_axis="column1", y_axis=[{"_type": "line", "name": "column2", "label": "c2"}])
+Redash.create_visualization(1, "line", "First Visualization", x_axis="column1", y_axis=[{"type": "line", "name": "column2", "label": "c2"}])
 
 
 # Create Dashboard
