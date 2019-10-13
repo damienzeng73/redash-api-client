@@ -127,13 +127,12 @@ Redash.generate_query_result(1)
     CHART_TYPE: ["table", "line", "column", "area", "pie", "scatter", "bubble", "box", "pivot"]
     CHART_NAME
     X_AXIS (optional): Column for X Axis (Required if CHART_TYPE is not table nor pivot)
-    Y_AXIS (optional): Column for Y Axis (Required if CHART_TYPE is not table not pivot)
-    Y_LABEL (optional): Custom name for legend
+    Y_AXIS (optional): Columns for Y Axis (Required if CHART_TYPE is not table nor pivot)
     TABLE_COLUMNS (optional): Custom columns for Table (Required if CHART_TYPE is table)
     PIVOT_TABLE_OPTIONS (optional): Options for Pivot Table (Required if CHART_TYPE is pivot)
     DESC (optional)
 """
-Redash.create_visualization(1, "line", "First Visualization", X_AXIS, Y_AXIS, Y_LABEL)
+Redash.create_visualization(1, "line", "First Visualization", x_axis="column1", y_axis=[{"_type": "line", "name": "column2", "label": "c2"}])
 
 
 # Create Dashboard
