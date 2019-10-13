@@ -2,14 +2,14 @@ import json
 import requests
 
 class RedashAPIClient(object):
-    def __init__(self, api_key, host='http://localhost:5000'):
+    def __init__(self, api_key: str, host: str = 'http://localhost:5000'):
         self.api_key = api_key
         self.host = host
 
         self.s = requests.Session()
         self.s.headers.update({"Authorization": f"Key {api_key}"})
 
-    def get(self, uri):
+    def get(self, uri: str):
         res = self.s.get(f"{self.host}/api/{uri}")
 
         if res.status_code != 200:
@@ -17,7 +17,7 @@ class RedashAPIClient(object):
 
         return res
 
-    def post(self, uri, payload=dict()):
+    def post(self, uri: str, payload: dict = {}):
         data = json.dumps(payload)
 
         self.s.headers.update({"Content-Type": "application/json"})
@@ -28,7 +28,7 @@ class RedashAPIClient(object):
 
         return res
 
-    def delete(self, uri):
+    def delete(self, uri: str):
         res = self.s.delete(f"{self.host}/api/{uri}")
 
         if res.status_code != 200:
@@ -36,7 +36,7 @@ class RedashAPIClient(object):
 
         return res
 
-    def create_data_source(self, _type, name, options):
+    def create_data_source(self, _type: str, name: str, options: dict = {}):
         payload = {
             "type": _type,
             "name": name,
@@ -45,7 +45,7 @@ class RedashAPIClient(object):
 
         return self.post('data_sources', payload)
 
-    def create_query(self, ds_id, name, qry, desc="", with_results=True):
+    def create_query(self, ds_id: int, name: str, qry: str, desc: str = "", with_results: bool = True):
         payload = {
             "data_source_id": ds_id,
             "name": name,
@@ -60,13 +60,13 @@ class RedashAPIClient(object):
             if qry_id is None:
                 raise Exception("Failed to create query.")
 
-            return self.generate_query_results(qry_id)
+            self.generate_query_results(qry_id)
         return res
 
-    def refresh_query(self, qry_id):
+    def refresh_query(self, qry_id: int):
         return self.post(f"queries/{qry_id}/refresh")
 
-    def generate_query_results(self, qry_id):
+    def generate_query_results(self, qry_id: int):
         res = self.get('queries')
         results = res.json().get('results', [])
 
@@ -83,7 +83,7 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id, _type, name, x_axis=None, y_axis=None, y_label=None, table_columns=None, pivot_table_options=None, desc=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, x_axis: str = None, y_axis: list = [], table_columns: list = [], pivot_table_options: dict = {}, desc=None):
         if _type == 'table':
             chart_type = 'TABLE'
             options = {
@@ -100,6 +100,25 @@ class RedashAPIClient(object):
             options = pivot_table_options
 
         else:
+            if x_axis is None or len(y_axis) == 0:
+                raise Exception("x_axis and y_axis is required.")
+
+            seriesOptions = {}
+            columnMapping = {}
+            for idx, y in enumerate(y_axis):
+                y_type = y.get('type', _type)
+                y_name = y.get('name', None)
+                y_label = y.get('label', None)
+
+                columnMapping[y_name] = "y"
+                seriesOptions[y_name] = {
+                    "index": 0,
+                    "type": y_type,
+                    "name": y_label,
+                    "yAxis": 0,
+                    "zIndex": idx
+                }
+
             chart_type = 'CHART'
             options = {
                 "globalSeriesType": _type,
@@ -109,19 +128,8 @@ class RedashAPIClient(object):
                 "xAxis": {"type": "category", "labels": {"enabled": True}},
                 "error_y": {"type": "data", "visible": True},
                 "series": {"stacking": None, "error_y": {"type": "data", "visible": True}},
-                "seriesOptions": {
-                    y_axis: {
-                        "zIndex": 0,
-                        "index": 0,
-                        "type": _type,
-                        "name": y_label or y_axis,
-                        "yAxis": 0
-                    }
-                },
-                "columnMapping": {
-                    x_axis: "x",
-                    y_axis: "y"
-                },
+                "seriesOptions": seriesOptiones,
+                "columnMapping": {x_axis: "x", **columnMapping},
                 "showDataLabels": True if _type == 'pie' else False
             }
 
@@ -135,14 +143,14 @@ class RedashAPIClient(object):
 
         return self.post('visualizations', payload)
 
-    def create_dashboard(self, name):
+    def create_dashboard(self, name: str):
         payload = {
             "name": name
         }
 
         return self.post('dashboards', payload)
 
-    def add_widget(self, db_id, text="", vs_id=None, full_width=False, position=None):
+    def add_widget(self, db_id: int, text: str = "", vs_id: int = None, full_width: bool = False, position: dict = None):
         res = self.get(f"dashboards")
 
         results = res.json().get('results', [])
@@ -163,7 +171,7 @@ class RedashAPIClient(object):
 
         return self.post('widgets', payload)
 
-    def calculate_widget_position(self, slug, full_width):
+    def calculate_widget_position(self, slug: str, full_width: bool):
         position = {
             "col": 0,
             "row": 0,
@@ -190,7 +198,7 @@ class RedashAPIClient(object):
 
         return position
 
-    def publish_dashboard(self, db_id):
+    def publish_dashboard(self, db_id: int):
         try:
             self.post(f"dashboards/{db_id}", {"is_draft": False})
         except Exception as e:
