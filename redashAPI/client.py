@@ -83,8 +83,47 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, x_axis: str = None, y_axis: list = [], table_columns: list = [], pivot_table_options: dict = {}, desc=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, x_axis: str = None, y_axis: list = [], table_options: dict = {}, pivot_table_options: dict = {}, desc=None):
         if _type == 'table':
+            if not table_options:
+                raise Exception("table_options is required.")
+
+            columns = table_options.get('columns', [])
+
+            if len(columns) == 0:
+                raise Exception("Missing columns in table_options.")
+
+            order = 100000
+            table_columns = []
+            for idx, col in enumerate(columns):
+                if 'name' not in col.keys() or 'type' not in col.keys():
+                    raise Exception("Missing name and type in columns.")
+
+                table_columns.append({
+                    "alignContent": "left",
+                    "allowHTML": True,
+                    "allowSearch": False,
+                    "booleanValues": [False, True],
+                    "dateTimeFormat": "DD/MM/YY HH:mm",
+                    "displayAs": "string",
+                    "highlightLinks": False,
+                    "imageHeight": "",
+                    "imageTitleTemplate": "{{ @ }}",
+                    "imageUrlTemplate": "{{ @ }}",
+                    "imageWidth": "",
+                    "linkOpenInNewTab": True,
+                    "linkTextTemplate": "{{ @ }}",
+                    "linkTitleTemplate": "{{ @ }}",
+                    "linkUrlTemplate": "{{ @ }}",
+                    "numberFormat": "0,0",
+                    "order": order + idx,
+                    "title": col.get('title', col['name']),
+                    "visible": True,
+                    **col
+                })
+
+            table_options['columns'] = table_columns
+
             chart_type = 'TABLE'
             options = {
                 "autoHeight": True,
@@ -92,7 +131,7 @@ class RedashAPIClient(object):
                 "defaultRows": 15,
                 "itemsPerPage": 10,
                 "minColumns": 1,
-                "columns": table_columns
+                **table_options
             }
 
         elif _type == 'pivot':
