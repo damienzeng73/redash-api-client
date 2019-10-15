@@ -83,20 +83,18 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, x_axis: str = None, y_axis: list = [], table_options: dict = {}, pivot_table_options: dict = {}, desc=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, x_axis: str = None, y_axis: list = [], columns: list = [], custom_options: dict = {}, desc=None):
         if _type == 'table':
-            if not table_options:
-                raise Exception("table_options is required.")
-
-            columns = table_options.get('columns', [])
-
-            if len(columns) == 0:
-                raise Exception("Missing columns in table_options.")
+            if not columns or len(columns) == 0:
+                try:
+                    columns = custom_options['columns']
+                except:
+                    raise Exception("columns is reqruied for table.")
 
             order = 100000
             table_columns = []
             for idx, col in enumerate(columns):
-                if 'name' not in col.keys() or 'type' not in col.keys():
+                if 'name' not in col or 'type' not in col:
                     raise Exception("Missing name and type in columns.")
 
                 table_columns.append({
@@ -122,8 +120,6 @@ class RedashAPIClient(object):
                     **col
                 })
 
-            table_options['columns'] = table_columns
-
             chart_type = 'TABLE'
             options = {
                 "autoHeight": True,
@@ -131,12 +127,16 @@ class RedashAPIClient(object):
                 "defaultRows": 15,
                 "itemsPerPage": 10,
                 "minColumns": 1,
-                **table_options
+                "columns": table_columns,
+                **custom_options
             }
 
         elif _type == 'pivot':
+            if not custom_options:
+                raise Exception("custom_options is required.")
+
             chart_type = 'PIVOT'
-            options = pivot_table_options
+            options = custom_options
 
         else:
             if x_axis is None or len(y_axis) == 0:
@@ -145,9 +145,12 @@ class RedashAPIClient(object):
             seriesOptions = {}
             columnMapping = {}
             for idx, y in enumerate(y_axis):
+                if 'name' not in y:
+                    raise Exception("Missing name in y_axis.")
+
+                y_name = y['name']
+                y_label = y.get('label', y_name)
                 y_type = y.get('type', _type)
-                y_name = y.get('name', None)
-                y_label = y.get('label', None)
 
                 columnMapping[y_name] = "y"
                 seriesOptions[y_name] = {
@@ -169,7 +172,8 @@ class RedashAPIClient(object):
                 "series": {"stacking": None, "error_y": {"type": "data", "visible": True}},
                 "seriesOptions": seriesOptions,
                 "columnMapping": {x_axis: "x", **columnMapping},
-                "showDataLabels": True if _type == 'pie' else False
+                "showDataLabels": True if _type == 'pie' else False,
+                **custom_options
             }
 
         payload = {
