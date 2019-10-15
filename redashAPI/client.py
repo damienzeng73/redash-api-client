@@ -83,7 +83,7 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, x_axis: str = None, y_axis: list = [], columns: list = [], custom_options: dict = {}, desc=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list = [], x_axis: str = None, y_axis: list = [], custom_options: dict = {}, desc=None):
         if _type == 'table':
             if not columns or len(columns) == 0:
                 try:
