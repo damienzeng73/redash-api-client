@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="redash-api-client",
-    version="0.2.0",
+    version="0.2.1",
     author="Damien Zeng",
     author_email="damnee562@gmail.com",
     description="Redash API Client",

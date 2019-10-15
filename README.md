@@ -126,13 +126,13 @@ Redash.generate_query_result(1)
     QUERY_ID
     CHART_TYPE: ["table", "line", "column", "area", "pie", "scatter", "bubble", "box", "pivot"]
     CHART_NAME
+    COLUMNS (optional): Columns for Table (Required if CHART_TYPE is table)
     X_AXIS (optional): Column for X Axis (Required if CHART_TYPE is not table nor pivot)
     Y_AXIS (optional): Columns for Y Axis (Required if CHART_TYPE is not table nor pivot)
-    TABLE_OPTIONS (optional): Custom options for Table (Required if CHART_TYPE is table)
-    PIVOT_TABLE_OPTIONS (optional): Options for Pivot Table (Required if CHART_TYPE is pivot)
+    CUSTOM_OPTIONS (optional): Custom options for Visualization
     DESC (optional)
 """
-Redash.create_visualization(1, "table", "First Visualization", table_options={"itemsPerPage": 100, "columns": [{"name": "column1", "type": "string"}]})
+Redash.create_visualization(1, "table", "First Visualization", columns=[{"name": "column1", "type": "string"}, {"name": "column2", "type": "datetime"}])
 Redash.create_visualization(1, "line", "Second Visualization", x_axis="column1", y_axis=[{"type": "line", "name": "column2", "label": "c2"}])
 
 
