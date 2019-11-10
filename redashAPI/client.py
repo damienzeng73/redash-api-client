@@ -45,12 +45,13 @@ class RedashAPIClient(object):
 
         return self.post('data_sources', payload)
 
-    def create_query(self, ds_id: int, name: str, qry: str, desc: str = "", with_results: bool = True):
+    def create_query(self, ds_id: int, name: str, qry: str, desc: str = "", with_results: bool = True, options: dict = {}):
         payload = {
             "data_source_id": ds_id,
             "name": name,
             "query": qry,
-            "description": desc
+            "description": desc,
+            "options": options
         }
 
         res = self.post('queries', payload)
