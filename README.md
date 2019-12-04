@@ -153,7 +153,7 @@ Redash.create_dashboard("First Dashboard")
     FULL_WIDTH (optional): Full width or not on dashboard, False by default
     POSITION (optional)
 """
-Redash.add_wdiget(1, text="Test")
+Redash.add_widget(1, text="Test")
 Redash.add_widget(1, visualization_id=1, full_width=True)
 
 
