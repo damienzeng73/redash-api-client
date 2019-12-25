@@ -2,7 +2,7 @@ import json
 import requests
 
 class RedashAPIClient(object):
-    def __init__(self, api_key: str, host: str = 'http://localhost:5000'):
+    def __init__(self, api_key: str, host: str='http://localhost:5000'):
         self.api_key = api_key
         self.host = host
 
@@ -17,7 +17,7 @@ class RedashAPIClient(object):
 
         return res
 
-    def post(self, uri: str, payload: dict = {}):
+    def post(self, uri: str, payload: dict={}):
         data = json.dumps(payload)
 
         self.s.headers.update({"Content-Type": "application/json"})
@@ -36,7 +36,7 @@ class RedashAPIClient(object):
 
         return res
 
-    def create_data_source(self, _type: str, name: str, options: dict = {}):
+    def create_data_source(self, _type: str, name: str, options: dict={}):
         payload = {
             "type": _type,
             "name": name,
@@ -45,7 +45,7 @@ class RedashAPIClient(object):
 
         return self.post('data_sources', payload)
 
-    def create_query(self, ds_id: int, name: str, qry: str, desc: str = "", with_results: bool = True, options: dict = {}):
+    def create_query(self, ds_id: int, name: str, qry: str, desc: str="", with_results: bool=True, options: dict={}):
         payload = {
             "data_source_id": ds_id,
             "name": name,
@@ -84,7 +84,7 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list = [], x_axis: str = None, y_axis: list = [], custom_options: dict = {}, desc=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=[], x_axis: str=None, y_axis: list=[], custom_options: dict={}, desc: str=None):
         if _type == 'table':
             if not columns or len(columns) == 0:
                 try:
@@ -194,7 +194,7 @@ class RedashAPIClient(object):
 
         return self.post('dashboards', payload)
 
-    def add_widget(self, db_id: int, text: str = "", vs_id: int = None, full_width: bool = False, position: dict = None):
+    def add_widget(self, db_id: int, text: str="", vs_id: int=None, full_width: bool=False, position: dict=None):
         res = self.get(f"dashboards")
 
         results = res.json().get('results', [])
