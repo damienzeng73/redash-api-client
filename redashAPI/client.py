@@ -84,7 +84,7 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=[], x_axis: str=None, y_axis: list=[], custom_options: dict={}, desc: str=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=[], x_axis: str=None, y_axis: list=[], group_by: str=None, custom_options: dict={}, desc: str=None):
         if _type == 'table':
             if not columns or len(columns) == 0:
                 try:
@@ -161,6 +161,9 @@ class RedashAPIClient(object):
                     "yAxis": 0,
                     "zIndex": idx
                 }
+
+            if group_by is not None:
+                columnMapping[group_by] = "series"
 
             chart_type = 'CHART'
             options = {
