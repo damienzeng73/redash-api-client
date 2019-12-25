@@ -129,6 +129,7 @@ Redash.generate_query_result(1)
     COLUMNS (optional): Columns for Table (Required if CHART_TYPE is table)
     X_AXIS (optional): Column for X Axis (Required if CHART_TYPE is not table nor pivot)
     Y_AXIS (optional): Columns for Y Axis (Required if CHART_TYPE is not table nor pivot)
+    GROUP_BY (optional): Group by specific Column
     CUSTOM_OPTIONS (optional): Custom options for Visualization
     DESC (optional)
 """
