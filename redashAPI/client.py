@@ -255,3 +255,23 @@ class RedashAPIClient(object):
         public_url = res.json().get('public_url', None)
 
         return public_url
+
+    def generate_raw_query_results(self, ds_id: int, qry: str):
+        payload = {
+            "data_source_id": ds_id,
+            "query": qry,
+            "max_age": 0
+        }
+
+        r_job = self.post('query_results', payload)
+        job_id: int = r_job.json().get('job', {}).get('id', None)
+        if job_id is None:
+            raise Exception("Failed to create the query job")
+
+        r_job = self.get(f'jobs/{job_id}')
+        qry_id: int = r_job.json().get('job', {}).get('query_result_id', None)
+
+        if job_id is None:
+            raise Exception("Failed to retrieve the query_results")
+
+        return self.get(f'query_results/{qry_id}')
