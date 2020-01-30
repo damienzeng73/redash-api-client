@@ -68,10 +68,11 @@ class RedashAPIClient(object):
         return self.post(f"queries/{qry_id}/refresh")
 
     def generate_query_results(self, qry_id: int):
-        res = self.get('queries')
-        results = res.json().get('results', [])
+        res = self.get(f'queries/{qry_id}')
+        res_data = res.json()
 
-        ds_id, qry = next(((q['data_source_id'], q['query']) for q in results if q['id'] == qry_id), (None, None))
+        ds_id = res_data.get('data_source_id', None)
+        qry = res_data.get('query', None)
 
         if ds_id is None or qry is None:
             raise Exception("Query not found.")
