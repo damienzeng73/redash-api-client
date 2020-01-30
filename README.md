@@ -117,7 +117,7 @@ Redash.refresh_query(1)
     :args:
     QUERY_ID
 """
-Redash.generate_query_result(1)
+Redash.generate_query_results(1)
 
 
 # Create Visualization
