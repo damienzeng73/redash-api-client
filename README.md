@@ -119,6 +119,13 @@ Redash.refresh_query(1)
 """
 Redash.generate_query_results(1)
 
+# Generate results from a raw query
+"""
+    :args:
+    DATA_SOURCE_ID
+    QUERY_STRING
+"""
+Redash.generate_raw_query_results(1, 'SELECT * FROM table_name')
 
 # Create Visualization
 """
