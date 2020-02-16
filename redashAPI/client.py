@@ -64,34 +64,28 @@ class RedashAPIClient:
         }
 
         res = self.post('queries', payload)
-        qry_id = res.json().get('id', None)
 
         if with_results:
-            if qry_id is None:
-                raise Exception("Failed to generate query results.")
-
-            self.generate_query_results(qry_id)
+            self.generate_query_results(ds_id, qry)
 
         return res
 
     def refresh_query(self, qry_id: int):
         return self.post(f"queries/{qry_id}/refresh")
 
-    def generate_query_results(self, qry_id: int):
-        res = self.get(f'queries/{qry_id}')
-        res_data = res.json()
-
-        ds_id = res_data.get('data_source_id', None)
-        qry = res_data.get('query', None)
-
-        if ds_id is None or qry is None:
-            raise Exception("Query not found.")
+    def generate_query_results(self, ds_id: int, qry: str, qry_id: int=None, max_age: int=0, parameters: dict=None):
+        if parameters is None or not isinstance(parameters, dict):
+            parameters = {}
 
         payload = {
             "data_source_id": ds_id,
-            "query_id": qry_id,
-            "query": qry
+            "query": qry,
+            "max_age": max_age,
+            "parameters": parameters
         }
+
+        if qry_id is not None:
+            payload["query_id"] = qry_id
 
         return self.post('query_results', payload)
 
@@ -269,23 +263,3 @@ class RedashAPIClient:
         public_url = res.json().get('public_url', None)
 
         return public_url
-
-    def generate_raw_query_results(self, ds_id: int, qry: str):
-        payload = {
-            "data_source_id": ds_id,
-            "query": qry,
-            "max_age": 0
-        }
-
-        r_job = self.post('query_results', payload)
-        job_id: int = r_job.json().get('job', {}).get('id', None)
-        if job_id is None:
-            raise Exception("Failed to create the query job")
-
-        r_job = self.get(f'jobs/{job_id}')
-        qry_id: int = r_job.json().get('job', {}).get('query_result_id', None)
-
-        if job_id is None:
-            raise Exception("Failed to retrieve the query_results")
-
-        return self.get(f'query_results/{qry_id}')
