@@ -169,7 +169,7 @@ Redash.create_data_source("pg", "First Data Source", {
 Redash.create_query(1, "First Query", "SELECT * FROM table_name;")
 ```
 
-# Refresh Query
+### Refresh Query
 
 - **qry_id**
     - Query ID.
@@ -180,7 +180,7 @@ Redash.create_query(1, "First Query", "SELECT * FROM table_name;")
 Redash.refresh_query(1)
 ```
 
-# Generate Query Result
+### Generate Query Result
 
 - **ds_id**
     - Data Source ID.
@@ -204,7 +204,7 @@ Redash.refresh_query(1)
 Redash.generate_query_results(1)
 ```
 
-# Create Visualization
+### Create Visualization
 
 - **qry_id**
     - Query ID.
@@ -239,7 +239,7 @@ Redash.create_visualization(1, "line", "Second Visualization", x_axis="column1",
 ])
 ```
 
-# Create Dashboard
+### Create Dashboard
 
 - **name**
     - Name for Dashboard.
@@ -250,7 +250,7 @@ Redash.create_visualization(1, "line", "Second Visualization", x_axis="column1",
 Redash.create_dashboard("First Dashboard")
 ```
 
-# Add Widget into Dashboard
+### Add Widget into Dashboard
 
 - **db_id**
     - Dashboard ID.
@@ -272,7 +272,7 @@ Redash.add_widget(1, text="Test")
 Redash.add_widget(1, visualization_id=1, full_width=True)
 ```
 
-# Publish Dashboard
+### Publish Dashboard
 
 - **db_id**
     - Dashboard ID.
