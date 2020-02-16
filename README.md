@@ -135,10 +135,15 @@ Redash.delete('data_sources/2')
 ### Create Data Source
 
 - **_type**
+
     - Type of Data Source. ([Supported types](https://github.com/getredash/redash/blob/ddb0ef15c1340e7de627e928f80486dfd3d6e1d5/redash/settings/__init__.py#L309-L358))
+
 - **name**
+
     - Name for Data Source.
+
 - **options**
+
     - Configuration.
 
 ```python
@@ -156,16 +161,27 @@ Redash.create_data_source("pg", "First Data Source", {
 ### Create Query
 
 - **ds_id**
+
     - Data Source ID.
+
 - **name**
+
     - Name for query.
+
 - **qry**
+
     - Query string.
+
 - **desc (optional)**
+
     - Description.
+
 - **with_results (optional)**
+
     - Generate query results automatically, `True` by default.
+
 - **options (optional)**
+
     - Custom options.
 
 ```python
@@ -177,6 +193,7 @@ Redash.create_query(1, "First Query", "SELECT * FROM table_name;")
 ### Refresh Query
 
 - **qry_id**
+
     - Query ID.
 
 ```python
@@ -188,19 +205,30 @@ Redash.refresh_query(1)
 ### Generate Query Result
 
 - **ds_id**
+
     - Data Source ID.
+
 - **qry**
+
     - Query String.
+
 - **qry_id (optional)**
+
     - Query ID.
+
 - **max_age (optional)**
+
     - If query results less than *max_age* seconds old are available,
     return them, otherwise execute the query; if omitted or -1, returns
     any cached result, or executes if not available. Set to zero to
     always execute.
+
 - **parameters (optional)**
+
     - A set of parameter values to apply to the query.
+
 - **return_results (optional)**
+
     - Return results if query is executed successfully, `True` by default.
 
 ```python
@@ -212,22 +240,39 @@ Redash.generate_query_results(1)
 ### Create Visualization
 
 - **qry_id**
+
     - Query ID.
+
 - **_type**
-    - Type of Visualization. ["table", "line", "column", "area", "pie", "scatter", "bubble", "box", "pivot"]
+
+    - Type of Visualization. (`table`, `line`, `column`, `area`, `pie`, `scatter`, `bubble`, `box`, `pivot`)
+
 - **name**
+
     - Name for Visualization.
+
 - **columns (optional)**
-    - Columns for Table. (Required if *_type* is table)
+
+    - Columns for Table. (Required if *_type* is `table`)
+
 - **x_axis (optional)**
-    - Column for X Axis. (Required if *_type* is not table nor pivot)
+
+    - Column for X Axis. (Required if *_type* is not `table` nor `pivot`)
+
 - **y_axis (optional)**
-    - Columns for Y Axis (Required if *_type* is not table nor pivot)
+
+    - Columns for Y Axis (Required if *_type* is not `table` nor `pivot`)
+
 - **group_by (optional)**
+
     - Group by specific column.
+
 - **custom_options (optional)**
+
     - Custom options for Visualization.
+
 - **desc (optional)**
+
     - Description.
 
 ```python
@@ -247,6 +292,7 @@ Redash.create_visualization(1, "line", "Second Visualization", x_axis="column1",
 ### Create Dashboard
 
 - **name**
+
     - Name for Dashboard.
 
 ```python
@@ -258,14 +304,23 @@ Redash.create_dashboard("First Dashboard")
 ### Add Widget into Dashboard
 
 - **db_id**
+
     - Dashboard ID.
+
 - **text (optional)**
+
     - Text Widget.
+
 - **vs_id (optional)**
+
     - Visualization ID.
+
 - **full_width (optional)**
+
     - Full width or not, `False` by default.
+
 - **position (optional)**
+
     - Custom position for Widget.
 
 ```python
@@ -280,6 +335,7 @@ Redash.add_widget(1, visualization_id=1, full_width=True)
 ### Publish Dashboard
 
 - **db_id**
+
     - Dashboard ID.
 
 ```python
