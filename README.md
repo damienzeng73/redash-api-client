@@ -3,7 +3,7 @@
 [![PyPI version fury.io](https://badge.fury.io/py/redash-api-client.svg)](https://pypi.org/project/redash-api-client/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/redash-api-client.svg)](https://pypi.python.org/pypi/redash-api-client/)
 [![PyPI license](https://img.shields.io/pypi/l/redash-api-client.svg)](https://pypi.python.org/pypi/redash-api-client/)
-[![PyPI download month](https://img.shields.io/pypi/dm/redash-api-client.svg)](https://pypi.python.org/pypi/redash-api-client/)
+[![Downloads](https://pepy.tech/badge/redash-api-client)](https://pepy.tech/project/redash-api-client)
 
 Redash API Client written in Python.
 
