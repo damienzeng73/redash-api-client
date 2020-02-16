@@ -34,7 +34,7 @@ class RedashAPIClient:
     def delete(self, uri: str):
         res = self.s.delete(f"{self.host}/api/{uri}")
 
-        if res.status_code != 200:
+        if res.status_code != 200 and res.status_code != 204:
             raise Exception(f"[DELETE] /api/{uri} ({res.status_code})")
 
         return res
