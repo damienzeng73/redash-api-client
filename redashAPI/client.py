@@ -1,7 +1,7 @@
 import json
 import requests
 
-class RedashAPIClient(object):
+class RedashAPIClient:
     def __init__(self, api_key: str, host: str='http://localhost:5000'):
         self.api_key = api_key
         self.host = host
@@ -13,18 +13,21 @@ class RedashAPIClient(object):
         res = self.s.get(f"{self.host}/api/{uri}")
 
         if res.status_code != 200:
-            raise Exception(f"Retrieve data from URL: /api/{uri} failed.")
+            raise Exception(f"[GET] /api/{uri} ({res.status_code})")
 
         return res
 
-    def post(self, uri: str, payload: dict={}):
+    def post(self, uri: str, payload: dict=None):
+        if payload is None or not isinstance(payload, dict):
+            payload = {}
+
         data = json.dumps(payload)
 
         self.s.headers.update({"Content-Type": "application/json"})
         res = self.s.post(f"{self.host}/api/{uri}", data=data)
 
         if res.status_code != 200:
-            raise Exception(f"Post data to URL: /api/{uri} failed.")
+            raise Exception(f"[POST] /api/{uri} ({res.status_code})")
 
         return res
 
@@ -32,11 +35,14 @@ class RedashAPIClient(object):
         res = self.s.delete(f"{self.host}/api/{uri}")
 
         if res.status_code != 200:
-            raise Exception(f"Delete data from URL: /api/{uri} failed.")
+            raise Exception(f"[DELETE] /api/{uri} ({res.status_code})")
 
         return res
 
-    def create_data_source(self, _type: str, name: str, options: dict={}):
+    def create_data_source(self, _type: str, name: str, options: dict=None):
+        if options is None or not isinstance(options, dict):
+            options = {}
+
         payload = {
             "type": _type,
             "name": name,
@@ -45,7 +51,10 @@ class RedashAPIClient(object):
 
         return self.post('data_sources', payload)
 
-    def create_query(self, ds_id: int, name: str, qry: str, desc: str="", with_results: bool=True, options: dict={}):
+    def create_query(self, ds_id: int, name: str, qry: str, desc: str="", with_results: bool=True, options: dict=None):
+        if options is None or not isinstance(options, dict):
+            options = {}
+
         payload = {
             "data_source_id": ds_id,
             "name": name,
@@ -59,9 +68,10 @@ class RedashAPIClient(object):
 
         if with_results:
             if qry_id is None:
-                raise Exception("Failed to create query.")
+                raise Exception("Failed to generate query results.")
 
             self.generate_query_results(qry_id)
+
         return res
 
     def refresh_query(self, qry_id: int):
@@ -85,19 +95,22 @@ class RedashAPIClient(object):
 
         return self.post('query_results', payload)
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=[], x_axis: str=None, y_axis: list=[], group_by: str=None, custom_options: dict={}, desc: str=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=None, x_axis: str=None, y_axis: list=None, group_by: str=None, custom_options: dict=None, desc: str=None):
+        if custom_options is None or not isinstance(custom_options, dict):
+            custom_options = {}
+
         if _type == 'table':
-            if not columns or len(columns) == 0:
+            if columns is None or not isinstance(columns, list) or len(columns) == 0:
                 try:
                     columns = custom_options['columns']
-                except:
+                except KeyError:
                     raise Exception("columns is reqruied for table.")
 
             order = 100000
             table_columns = []
             for idx, col in enumerate(columns):
                 if 'name' not in col or 'type' not in col:
-                    raise Exception("Missing name and type in columns.")
+                    raise Exception("name and type are required in columns.")
 
                 table_columns.append({
                     "alignContent": "left",
@@ -135,20 +148,20 @@ class RedashAPIClient(object):
 
         elif _type == 'pivot':
             if not custom_options:
-                raise Exception("custom_options is required.")
+                raise Exception("custom_options is required for pivot.")
 
             chart_type = 'PIVOT'
             options = custom_options
 
         else:
-            if x_axis is None or len(y_axis) == 0:
-                raise Exception("x_axis and y_axis is required.")
+            if x_axis is None or y_axis is None or not isinstance(y_axis, list) or len(y_axis) == 0:
+                raise Exception(f"x_axis and y_axis are required for {_type}.")
 
             seriesOptions = {}
             columnMapping = {}
             for idx, y in enumerate(y_axis):
                 if 'name' not in y:
-                    raise Exception("Missing name in y_axis.")
+                    raise Exception("name is required in y_axis.")
 
                 y_name = y['name']
                 y_label = y.get('label', y_name)
