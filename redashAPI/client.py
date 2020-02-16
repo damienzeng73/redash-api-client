@@ -73,7 +73,7 @@ class RedashAPIClient:
     def refresh_query(self, qry_id: int):
         return self.post(f"queries/{qry_id}/refresh")
 
-    def generate_query_results(self, ds_id: int, qry: str, qry_id: int=None, max_age: int=0, parameters: dict=None):
+    def generate_query_results(self, ds_id: int, qry: str, qry_id: int=None, max_age: int=0, parameters: dict=None, return_results: bool=False):
         if parameters is None or not isinstance(parameters, dict):
             parameters = {}
 
@@ -87,7 +87,15 @@ class RedashAPIClient:
         if qry_id is not None:
             payload["query_id"] = qry_id
 
-        return self.post('query_results', payload)
+        res = self.post('query_results', payload)
+
+        if return_results:
+            job_id = res.json().get('job', {}).get('id', None)
+            result_id = self.get(f"jobs/{job_id}").json().get('query_result_id', None)
+
+            return self.get(f"query_results/{result_id}")
+
+        return res
 
     def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=None, x_axis: str=None, y_axis: list=None, group_by: str=None, custom_options: dict=None, desc: str=None):
         if custom_options is None or not isinstance(custom_options, dict):
