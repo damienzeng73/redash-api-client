@@ -1,5 +1,7 @@
 import json
 import requests
+import time
+from datetime import datetime
 
 class RedashAPIClient:
     def __init__(self, api_key: str, host: str="http://localhost:5000"):
@@ -267,3 +269,24 @@ class RedashAPIClient:
         public_url = res.json().get('public_url', None)
 
         return public_url
+
+    def query_and_wait_result(self, ds_id, query, timeout=60):
+        query = {
+            'data_source_id': ds_id,
+            'query': query,
+            'max_age': 0
+        }
+        res = self.post('query_results', query)
+        job_id = res.json().get('job', {}).get('id')
+        start = datetime.now()
+        while True:
+            job = self.get(f'jobs/{job_id}')
+            job = job.json().get('job', {})
+            if job.get('status') == 3:
+                query_result_id = job.get('query_result_id')
+                break
+            if (datetime.now() - start).total_seconds() > timeout:
+                raise Exception('polling timeout')
+            time.sleep(0.2)
+
+        return self.get(f'query_results/{query_result_id}')
