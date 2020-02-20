@@ -232,7 +232,7 @@ class RedashAPIClient:
     def calculate_widget_position(self, db_id: int, full_width: bool):
         res = self.get('dashboards')
         dashboards = res.json().get('results', [])
-        slug = next((d['slug'] == db_id for d in dashboards if d['id'] == db_id), None)
+        slug = next((d['slug'] for d in dashboards if d['id'] == db_id), None)
 
         res = self.get(f'dashboards/{slug}')
         widgets = res.json().get('widgets', [])
