@@ -237,6 +237,25 @@ Redash.refresh_query(1)
 Redash.generate_query_results(1)
 ```
 
+### Query and Wait Result
+
+- **ds_id**
+
+    - Data Source ID.
+
+- **qry**
+
+    - Query String.
+
+- **timeout (optional)**
+    - Defines the time in seconds to wait before cutting the request.
+
+```python
+### EXAMPLE ###
+
+Redash.query_and_wait_result(1, 'select * from my_table;', 60)
+```
+
 ### Create Visualization
 
 - **qry_id**
