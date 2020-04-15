@@ -124,7 +124,7 @@ class RedashAPIClient:
 
         return self.get(f'query_results/{query_result_id}')
 
-    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=None, x_axis: str=None, y_axis: list=None, group_by: str=None, custom_options: dict=None, desc: str=None):
+    def create_visualization(self, qry_id: int, _type: str, name: str, columns: list=None, x_axis: str=None, y_axis: list=None, size_column: str=None, group_by: str=None, custom_options: dict=None, desc: str=None):
         if custom_options is None or not isinstance(custom_options, dict):
             custom_options = {}
 
@@ -186,8 +186,8 @@ class RedashAPIClient:
             if x_axis is None or y_axis is None or not isinstance(y_axis, list) or len(y_axis) == 0:
                 raise Exception(f"x_axis and y_axis are required for {_type}.")
 
-            seriesOptions = {}
             columnMapping = {}
+            seriesOptions = {}
             for idx, y in enumerate(y_axis):
                 if 'name' not in y:
                     raise Exception("name is required in y_axis.")
@@ -205,6 +205,9 @@ class RedashAPIClient:
                     "zIndex": idx
                 }
 
+            if size_column is not None:
+                columnMapping[size_column] = "size"
+
             if group_by is not None:
                 columnMapping[group_by] = "series"
 
@@ -217,8 +220,8 @@ class RedashAPIClient:
                 "xAxis": {"type": "category", "labels": {"enabled": True}},
                 "error_y": {"type": "data", "visible": True},
                 "series": {"stacking": None, "error_y": {"type": "data", "visible": True}},
-                "seriesOptions": seriesOptions,
                 "columnMapping": {x_axis: "x", **columnMapping},
+                "seriesOptions": seriesOptions,
                 "showDataLabels": True if _type == 'pie' else False,
                 **custom_options
             }

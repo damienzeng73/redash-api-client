@@ -282,6 +282,10 @@ Redash.query_and_wait_result(1, 'select * from my_table;', 60)
 
     - Columns for Y Axis (Required if *_type* is not `table` nor `pivot`)
 
+- **size_column (optional)**
+
+    - Column for size. (Bubble)
+
 - **group_by (optional)**
 
     - Group by specific column.
