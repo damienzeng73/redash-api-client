@@ -266,10 +266,10 @@ class RedashAPIClient:
         res = self.get(f'dashboards/{slug}')
         widgets = res.json().get('widgets', [])
 
-        full_width_widgets_count = 0
+        exceed_half_width_widgets_count = 0
         for w in widgets:
-            if w['options']['position']['sizeX'] == 6:
-                full_width_widgets_count += 1
+            if w['options']['position']['col'] + w['options']['position']['sizeX'] > 3:
+                exceed_half_width_widgets_count += 1
 
         position = {
             "col": 0,
@@ -279,12 +279,13 @@ class RedashAPIClient:
         }
 
         if len(widgets) > 0:
-            row, col = divmod(len(widgets) - full_width_widgets_count, 2)
+            row, col = divmod(len(widgets) - exceed_half_width_widgets_count, 2)
 
-            position['row'] = (row + full_width_widgets_count) * 8
             position['col'] = col * 3
+            position['row'] = (row + exceed_half_width_widgets_count) * 8
 
         if full_width:
+            position['col'] = 0
             position['sizeX'] = 6
 
         return position
