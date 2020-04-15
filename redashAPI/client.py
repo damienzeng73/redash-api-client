@@ -182,7 +182,7 @@ class RedashAPIClient:
             chart_type = 'PIVOT'
             options = custom_options
 
-        else:
+        elif _type in ['line', 'column', 'area', 'pie', 'scatter', 'bubble', 'box']:
             if x_axis is None or y_axis is None or not isinstance(y_axis, list) or len(y_axis) == 0:
                 raise Exception(f"x_axis and y_axis are required for {_type}.")
 
@@ -222,6 +222,8 @@ class RedashAPIClient:
                 "showDataLabels": True if _type == 'pie' else False,
                 **custom_options
             }
+        else:
+            raise Exception(f"Type {_type} is not supported yet.")
 
         payload = {
             "name": name,
