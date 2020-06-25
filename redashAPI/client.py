@@ -53,7 +53,7 @@ class RedashAPIClient:
 
         return self.post('data_sources', payload)
 
-    def create_query(self, ds_id: int, name: str, qry: str, desc: str="", with_results: bool=True, options: dict=None):
+    def create_query(self, ds_id: int, name: str, qry: str, desc: str="", with_results: bool=True, options: dict=None, schedule: dict=None):
         if options is None or not isinstance(options, dict):
             options = {}
 
@@ -62,7 +62,8 @@ class RedashAPIClient:
             "name": name,
             "query": qry,
             "description": desc,
-            "options": options
+            "options": options,
+            "schedule": schedule
         }
 
         res = self.post('queries', payload)
