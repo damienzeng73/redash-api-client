@@ -184,6 +184,10 @@ Redash.create_data_source("pg", "First Data Source", {
 
     - Custom options.
 
+- **schedule (optional)**
+
+    - Schedule configurations
+
 ```python
 ### EXAMPLE ###
 
