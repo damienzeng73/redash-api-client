@@ -101,7 +101,7 @@ Redash.post('data_sources', {
         "dbname": DB_NAME,
         "host": DB_HOST,
         "user": DB_USER,
-        "passwd": DB_PASSWORD,
+        "password": DB_PASSWORD,
         "port": DB_PORT
     }
 })
@@ -117,7 +117,7 @@ Redash.post('data_sources', {
         "dbname": DB_NAME,
         "host": DB_HOST,
         "user": DB_USER,
-        "passwd": DB_PASSWORD,
+        "password": DB_PASSWORD,
         "port": DB_PORT
     },
     "groups": {
@@ -153,7 +153,7 @@ Redash.create_data_source("pg", "First Data Source", {
     "dbname": DB_NAME,
     "host": DB_HOST,
     "user": DB_USER,
-    "passwd": DB_PASSWORD,
+    "password": DB_PASSWORD,
     "port": DB_PORT
 })
 ```
