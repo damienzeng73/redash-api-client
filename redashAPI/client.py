@@ -75,9 +75,6 @@ class RedashAPIClient:
     def refresh_query(self, qry_id: int):
         return self.post(f"queries/{qry_id}/refresh")
 
-    def get_results_for_existing_query(self, qry_id: int):
-        return self.post(f"queries/{qry_id}/results")
-
     def generate_query_results(self, ds_id: int, qry: str, qry_id: int=None, max_age: int=0, parameters: dict=None, return_results: bool=False):
         if parameters is None or not isinstance(parameters, dict):
             parameters = {}
