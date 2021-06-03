@@ -300,3 +300,22 @@ class RedashAPIClient:
         public_url = res.json().get('public_url', None)
 
         return public_url
+
+    def get_dashboard_queries(self, db_slug: str) -> list:
+        """
+        This method returns the queries contained within a dashboard.
+        :param db_slug: slug that identifies the dashboard
+        :return: A list of dictionaries where each dictionary contains "name" of the query and its "id" as keys.
+        """
+        queries_in_dashboard = []
+        if (res := self.get(f"dashboards/{db_slug}")) is not None:
+            widgets = res.json().get('widgets', [])
+            for widget in widgets:
+                if (visualization := widget.get('visualization', None)) is not None:
+                    queries_in_dashboard.append(
+                        {
+                            'name': visualization['query']['name'],
+                            'id': int(visualization['query']['id'])
+                        }
+                    )
+        return queries_in_dashboard
