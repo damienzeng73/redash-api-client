@@ -21,6 +21,7 @@ class TestDashboard(unittest.TestCase):
         assert len(queries) == 1
         assert queries[0]['name'] == 'Name of the query'
         assert queries[0]['id'] == 244
+        assert queries[0]['query'] == 'query;'
 
 
 MOCKED_RESPONSE = """
