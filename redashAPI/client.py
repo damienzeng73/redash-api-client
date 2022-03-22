@@ -4,12 +4,13 @@ import time
 from datetime import datetime
 
 class RedashAPIClient:
-    def __init__(self, api_key: str, host: str="http://localhost:5000"):
+    def __init__(self, api_key: str, host: str="http://localhost:5000", ms_between_retries: int=200):
         self.api_key = api_key
         self.host = host
 
         self.s = requests.Session()
         self.s.headers.update({"Authorization": f"Key {api_key}"})
+        self.ms_between_retries = ms_between_retries
 
     def get(self, uri: str):
         res = self.s.get(f"{self.host}/api/{uri}")
@@ -120,7 +121,7 @@ class RedashAPIClient:
             if (datetime.now() - start).total_seconds() > timeout:
                 raise Exception('Polling timeout.')
 
-            time.sleep(0.2)
+            time.sleep(self.ms_between_retries / 1000.0)
 
         return self.get(f'query_results/{query_result_id}')
 
