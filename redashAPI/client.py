@@ -99,6 +99,44 @@ class RedashAPIClient:
 
         return res
 
+    def query_and_return_jobid(self, ds_id: int, query: str):
+        payload = {
+            'data_source_id': ds_id,
+            'query': query,
+            'max_age': 0
+        }
+
+        res = self.post('query_results', payload)
+        job_id = res.json().get('job', {}).get('id')
+
+        return job_id
+
+    def track_job_status_by_id(self, job_id):
+        print(F"Tracking job {job_id}")
+        stickArray = [ "|", "/", "-", "\\", ]
+        i = 0
+
+        while True:
+            job = self.get(f'jobs/{job_id}')
+            job = job.json().get('job', {})
+            if job.get('status') == 3:
+                query_result_id = job.get('query_result_id')
+                break
+            elif job.get('status') == 4:
+                print(F"Failed to execute job {job_id}")
+                return "FAILURE"
+            elif job.get('status') == 5:
+                print(F"Canceled job {job_id}")
+                return "CANCELLED"
+            else:
+                sys.stdout.write('\b') # move back the cursor
+                sys.stdout.write(stickArray[i % 4])
+                sys.stdout.flush()
+                i = i + 1
+                time.sleep(0.2)
+
+        return self.get(f'query_results/{query_result_id}')
+
     def query_and_wait_result(self, ds_id: int, query: str, timeout: int=60):
         payload = {
             'data_source_id': ds_id,
